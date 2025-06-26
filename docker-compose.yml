@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  sensevoice:
+    build: .
+    container_name: sensevoice-rknn2
+    restart: unless-stopped
+    volumes:
+      - ./audio:/opt/sensevoice/audio
+      - ./models:/opt/sensevoice/models
+      - /dev:/dev
+    privileged: true
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      - PYTHONUNBUFFERED=1
+      - SPEECH_SCALE=0.5
+    ports:
+      - "8080:8080"
+    command: ["python3", "./sensevoice_rknn.py", "--audio_file", "/opt/sensevoice/audio/input.wav"]
+    
+  # Optional: Web interface service
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: sensevoice-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - sensevoice
+    volumes:
+      - ./audio:/app/audio
+    environment:
+      - SENSEVOICE_API_URL=http://sensevoice:8080
+
+volumes:
+  audio_data:
+  models_data: 
