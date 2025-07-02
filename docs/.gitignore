@@ -1,0 +1,2 @@
+# Ignore the wiki directory as it's a separate git repository
+wiki/ 
