@@ -15,6 +15,37 @@ SenseVoice is an audio foundation model with multi-modal capabilities including:
 - **Memory Usage**: ~1.1GB
 - **Latency**: Extremely low inference delay
 
+## Documentation
+
+This project includes comprehensive documentation available in the [wiki submodule](./wiki/). The wiki contains detailed guides covering:
+
+- **📖 [Quick Start Guide](./wiki/Quick-Start-Guide.md)** - Get up and running in minutes
+- **🏗️ [Architecture Guide](./wiki/Architecture.md)** - System design and technical details
+- **📋 [API Reference](./wiki/api-reference.md)** - Complete API documentation with examples
+- **🔧 [Installation Guide](./wiki/Installation-Guide.md)** - Detailed setup instructions
+- **🐳 [Docker Setup](./wiki/Docker-Setup.md)** - Container deployment guide
+- **📊 [Monitoring Guide](./wiki/Monitoring.md)** - Metrics and observability
+- **🚀 [Deployment Guide](./wiki/Deployment.md)** - Production deployment
+- **🔒 [Security Guide](./wiki/Security-Guide.md)** - Security best practices
+- **🧪 [Testing Guide](./wiki/testing.md)** - Testing strategies and examples
+- **🛠️ [Development Guide](./wiki/Development-Guide.md)** - Contributing and development
+- **❓ [Troubleshooting](./wiki/Troubleshooting.md)** - Common issues and solutions
+
+### Accessing the Wiki
+The wiki is included as a git submodule. To access it:
+
+```bash
+# Clone with submodules (recommended)
+git clone --recursive <repository-url>
+cd SenseVoiceSmall-RKNN2-API
+
+# Or initialize submodules if already cloned
+git submodule update --init --recursive
+
+# View wiki documentation
+ls wiki/
+```
+
 ## Quick Start
 
 ### Prerequisites
@@ -192,10 +223,16 @@ docker compose exec sensevoice python3 ./sensevoice_rknn.py --audio_file /opt/se
 │       ├── sensevoice_rknn.py  # Main application
 │       ├── convert_rknn.py     # RKNN model conversion script
 │       └── ...                 # Other model files
-└── docs/                   # Additional documentation
+├── wiki/                   # 📚 Documentation wiki (git submodule)
+│   ├── README.md           # Wiki home page
+│   ├── Quick-Start-Guide.md # Getting started guide
+│   ├── Architecture.md     # System architecture
+│   ├── api-reference.md    # API documentation
+│   └── ...                 # Additional documentation
+└── tests/                  # Test files and test data
 ```
 
-### Updating the Submodule
+### Updating Submodules
 To update to the latest version of the SenseVoice model:
 ```bash
 # Update the submodule to the latest commit
@@ -204,6 +241,16 @@ git submodule update --remote submodules/SenseVoiceSmall-RKNN2
 # Commit the update
 git add submodules/SenseVoiceSmall-RKNN2
 git commit -m "Update SenseVoice submodule to latest version"
+```
+
+To update the documentation wiki:
+```bash
+# Update wiki submodule
+git submodule update --remote wiki
+
+# Commit the wiki update
+git add wiki
+git commit -m "Update documentation wiki"
 ```
 
 ### Building from Source
@@ -234,5 +281,6 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE)
 
 For issues and questions:
 - Create an issue in this repository
-- Check the [original SenseVoice documentation](https://huggingface.co/happyme531/SenseVoiceSmall-RKNN2)
+- Check the [comprehensive documentation in the wiki](./wiki/)
+- Review the [original SenseVoice documentation](https://huggingface.co/happyme531/SenseVoiceSmall-RKNN2)
 - Review RKNN2 driver documentation
