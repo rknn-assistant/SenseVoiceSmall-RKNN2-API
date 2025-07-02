@@ -1,3 +1,6 @@
 [submodule "submodules/SenseVoiceSmall-RKNN2"]
 	path = submodules/SenseVoiceSmall-RKNN2
 	url = https://huggingface.co/happyme531/SenseVoiceSmall-RKNN2
+[submodule "wiki"]
+	path = wiki
+	url = https://github.com/rknn-assistant/SenseVoiceSmall-RKNN2-API.wiki.git
