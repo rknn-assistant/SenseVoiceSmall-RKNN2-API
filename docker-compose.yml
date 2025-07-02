@@ -19,7 +19,7 @@ services:
       - SPEECH_SCALE=0.5
     ports:
       - "8081:8080"
-    command: ["python3", "./sensevoice_rknn.py", "--audio_file", "/opt/sensevoice/audio/test.wav"]
+    command: ["python3", "-m", "api.app"]
 
 volumes:
   audio_data:

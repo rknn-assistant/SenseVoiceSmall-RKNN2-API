@@ -44,6 +44,9 @@ COPY submodules/SenseVoiceSmall-RKNN2/*.mvn /opt/sensevoice/
 COPY submodules/SenseVoiceSmall-RKNN2/*.yaml /opt/sensevoice/
 COPY submodules/SenseVoiceSmall-RKNN2/*.wav /opt/sensevoice/
 
+# Copy API files from main repo
+COPY api/ /opt/sensevoice/api/
+
 # Copy requirements.txt from main repo
 COPY requirements.txt /opt/sensevoice/
 

@@ -59,9 +59,19 @@ class TranscriptionResult:
 class SenseVoiceAPI:
     """Main API class for SenseVoice transcription."""
     
-    def __init__(self, model_path: str = None):
+    def __init__(self, model_path: Optional[str] = None):
         """Initialize the API with model loading."""
-        self.model_path = model_path or str(Path(__file__).parent.parent / "submodules" / "SenseVoiceSmall-RKNN2")
+        # In Docker container, models are in the root directory
+        if model_path is None:
+            # Check if we're in Docker container (models in root)
+            docker_model_path = Path(__file__).parent.parent
+            if (docker_model_path / "am.mvn").exists():
+                self.model_path = str(docker_model_path)
+            else:
+                # Fallback to submodule path for development
+                self.model_path = str(Path(__file__).parent.parent / "submodules" / "SenseVoiceSmall-RKNN2")
+        else:
+            self.model_path = str(model_path)
         self.models = {}
         self.lock = threading.Lock()
         
