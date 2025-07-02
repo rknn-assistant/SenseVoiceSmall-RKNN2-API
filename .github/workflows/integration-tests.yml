@@ -1,0 +1,93 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [ main, Dockerfile-dev ]
+  pull_request:
+    branches: [ main, Dockerfile-dev ]
+  workflow_dispatch:
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests pytest
+    
+    - name: Build Docker image
+      run: |
+        docker compose build
+    
+    - name: Start Docker container
+      run: |
+        docker compose up -d
+        sleep 30
+    
+    - name: Wait for API to be ready
+      run: |
+        timeout 60 bash -c 'until curl -s http://localhost:8081/health | grep -q "healthy"; do sleep 2; done'
+    
+    - name: Run basic health check
+      run: |
+        curl -s http://localhost:8081/health | jq .
+    
+    - name: Test API endpoints
+      run: |
+        # Test health endpoint
+        curl -s http://localhost:8081/health | jq -e '.status == "healthy"'
+        
+        # Test config endpoint
+        curl -s http://localhost:8081/config | jq -e '.features'
+        
+        # Test languages endpoint
+        curl -s http://localhost:8081/languages | jq -e '.languages'
+        
+        # Test transcription endpoint
+        curl -X POST -F 'audio=@audio/test.wav' http://localhost:8081/transcribe | jq -e '.success == true'
+        
+        # Test metrics endpoint
+        curl -s http://localhost:8081/metrics | grep -q "sensevoice_requests_total"
+    
+    - name: Test batch transcription
+      run: |
+        curl -X POST \
+          -F 'audio_files=@audio/test.wav' \
+          -F 'audio_files=@audio/127389__acclivity__thetimehascome.wav' \
+          http://localhost:8081/transcribe/batch | jq -e '.success == true'
+    
+    - name: Run performance tests
+      run: |
+        # Test multiple requests
+        for i in {1..3}; do
+          curl -X POST -F 'audio=@audio/test.wav' http://localhost:8081/transcribe > /dev/null
+        done
+        
+        # Check metrics
+        curl -s http://localhost:8081/metrics | grep "sensevoice_requests_total"
+    
+    - name: Stop Docker container
+      if: always()
+      run: |
+        docker compose down
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: |
+          integration_test_results.json
+          docker-compose.log 
