@@ -1,0 +1,3 @@
+[submodule "submodules/SenseVoiceSmall-RKNN2"]
+	path = submodules/SenseVoiceSmall-RKNN2
+	url = https://huggingface.co/happyme531/SenseVoiceSmall-RKNN2

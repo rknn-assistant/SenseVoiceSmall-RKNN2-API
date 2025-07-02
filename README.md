@@ -22,22 +22,26 @@ SenseVoice is an audio foundation model with multi-modal capabilities including:
 - RKNN2-compatible hardware (RK3588, etc.)
 - Audio files in WAV format (16kHz, 16-bit, mono preferred)
 
-### 1. Clone Repository
+### 1. Clone Repository with Submodules
 ```bash
-git clone <repository-url>
+# Clone the repository with submodules
+git clone --recursive <repository-url>
 cd SenseVoiceSmall-RKNN2-API
+
+# Or if you already cloned without submodules
+git submodule update --init --recursive
 ```
 
 ### 2. Build and Run with Docker Compose
 ```bash
 # Build the Docker image
-docker-compose build
+docker compose build
 
 # Run the service
-docker-compose up -d
+docker compose up -d
 
 # Check logs
-docker-compose logs -f sensevoice
+docker compose logs -f sensevoice
 ```
 
 ### 3. Test with Sample Audio
@@ -49,7 +53,7 @@ cp your_audio.wav audio/input.wav
 ffmpeg -i audio/127389__acclivity__thetimehascome.wav -f wav -acodec pcm_s16le -ac 1 -ar 16000 audio/test.wav
 
 # Run transcription
-docker-compose exec sensevoice python3 ./sensevoice_rknn.py --audio_file /opt/sensevoice/audio/test.wav
+docker compose exec sensevoice python3 ./sensevoice_rknn.py --audio_file /opt/sensevoice/audio/test.wav
 ```
 
 ## Manual Installation (Bare Metal)
@@ -61,10 +65,10 @@ docker-compose exec sensevoice python3 ./sensevoice_rknn.py --audio_file /opt/se
 
 ### Installation Steps
 
-1. **Clone the repository**
+1. **Clone the repository with submodules**
    ```bash
-   git clone https://huggingface.co/happyme531/SenseVoiceSmall-RKNN2
-   cd SenseVoiceSmall-RKNN2
+   git clone --recursive <repository-url>
+   cd SenseVoiceSmall-RKNN2-API
    ```
 
 2. **Install system dependencies**
@@ -87,7 +91,7 @@ docker-compose exec sensevoice python3 ./sensevoice_rknn.py --audio_file /opt/se
    ffmpeg -i 127389__acclivity__thetimehascome.wav -f wav -acodec pcm_s16le -ac 1 -ar 16000 test.wav
    
    # Run transcription
-   python3 ./sensevoice_rknn.py --audio_file test.wav
+   python3 ./submodules/SenseVoiceSmall-RKNN2/sensevoice_rknn.py --audio_file test.wav
    ```
 
 ## Docker Usage
@@ -132,11 +136,11 @@ ffmpeg -i input_audio.mp3 -f wav -acodec pcm_s16le -ac 1 -ar 16000 output.wav
 
 ## API Usage
 
-The application can be extended to provide REST API endpoints. See the `sensevoice_rknn.py` file for implementation details.
+The application can be extended to provide REST API endpoints. See the `submodules/SenseVoiceSmall-RKNN2/sensevoice_rknn.py` file for implementation details.
 
 ### Command Line Options
 ```bash
-python3 ./sensevoice_rknn.py --audio_file path/to/audio.wav [options]
+python3 ./submodules/SenseVoiceSmall-RKNN2/sensevoice_rknn.py --audio_file path/to/audio.wav [options]
 ```
 
 ## Troubleshooting
@@ -160,10 +164,16 @@ python3 ./sensevoice_rknn.py --audio_file path/to/audio.wav [options]
    - Ensure sufficient system memory (>2GB recommended)
    - Monitor memory usage during inference
 
+5. **Submodule issues**
+   - If you get errors about missing files, ensure submodules are initialized:
+     ```bash
+     git submodule update --init --recursive
+     ```
+
 ### Debug Mode
 ```bash
 # Enable verbose logging
-docker-compose exec sensevoice python3 ./sensevoice_rknn.py --audio_file /opt/sensevoice/audio/test.wav --verbose
+docker compose exec sensevoice python3 ./sensevoice_rknn.py --audio_file /opt/sensevoice/audio/test.wav --verbose
 ```
 
 ## Development
@@ -174,22 +184,38 @@ docker-compose exec sensevoice python3 ./sensevoice_rknn.py --audio_file /opt/se
 ├── Dockerfile              # Main Docker configuration
 ├── docker-compose.yml      # Docker Compose configuration
 ├── requirements.txt        # Python dependencies
-├── sensevoice_rknn.py     # Main application
-├── convert_rknn.py        # RKNN model conversion script
-├── audio/                 # Audio files directory
-├── models/                # Model files directory
-└── docs/                  # Additional documentation
+├── audio/                  # Audio files directory
+├── models/                 # Model files directory
+├── scripts/                # Utility scripts
+├── submodules/             # Git submodules
+│   └── SenseVoiceSmall-RKNN2/  # Original SenseVoice model files
+│       ├── sensevoice_rknn.py  # Main application
+│       ├── convert_rknn.py     # RKNN model conversion script
+│       └── ...                 # Other model files
+└── docs/                   # Additional documentation
+```
+
+### Updating the Submodule
+To update to the latest version of the SenseVoice model:
+```bash
+# Update the submodule to the latest commit
+git submodule update --remote submodules/SenseVoiceSmall-RKNN2
+
+# Commit the update
+git add submodules/SenseVoiceSmall-RKNN2
+git commit -m "Update SenseVoice submodule to latest version"
 ```
 
 ### Building from Source
 1. Download ONNX model from [lovemefan/SenseVoice-onnx](https://huggingface.co/lovemefan/SenseVoice-onnx)
-2. Convert to RKNN format using `convert_rknn.py`
+2. Convert to RKNN format using `submodules/SenseVoiceSmall-RKNN2/convert_rknn.py`
 3. Test with sample audio
 
 ## References
 
 - [SenseVoice Original Repository](https://github.com/FunAudioLLM/SenseVoice)
 - [SenseVoice-ONNX Models](https://huggingface.co/lovemefan/SenseVoice-onnx)
+- [SenseVoiceSmall-RKNN2 Model](https://huggingface.co/happyme531/SenseVoiceSmall-RKNN2)
 - [RKNN2 Documentation](https://github.com/rockchip-linux/rknpu)
 
 ## License

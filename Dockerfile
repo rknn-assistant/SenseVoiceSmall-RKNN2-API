@@ -15,9 +15,11 @@ RUN apt-get update \
         ffmpeg \
         libasound2-dev \
         libsndfile1 \
+        libdrm2 \
+        libdrm-dev \
     && rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
 
-# Install RKNPU driver
+# Install RKNPU driver and runtime libraries
 RUN cd /tmp \
     && git clone https://github.com/rockchip-linux/rknpu.git \
     && cd rknpu \
@@ -25,21 +27,25 @@ RUN cd /tmp \
     && cp -r drivers/linux-aarch64/usr/lib/* /usr/lib/ \
     && cp -r rknn/rknn_api/librknn_api/lib/* /usr/lib/ \
     && cp -r rknn/rknn_utils/librknn_utils/lib/* /usr/lib/ \
+    && cp -r runtime/Linux/librknn_api/aarch64/* /usr/lib/ || true \
     && ldconfig \
     && cd .. \
     && rm -rf rknpu
 
 WORKDIR /opt/sensevoice
 
-# Copy application files
+# Copy application files from submodule
+COPY submodules/SenseVoiceSmall-RKNN2/*.py /opt/sensevoice/
+COPY submodules/SenseVoiceSmall-RKNN2/*.onnx /opt/sensevoice/
+COPY submodules/SenseVoiceSmall-RKNN2/*.rknn /opt/sensevoice/
+COPY submodules/SenseVoiceSmall-RKNN2/*.model /opt/sensevoice/
+COPY submodules/SenseVoiceSmall-RKNN2/*.npy /opt/sensevoice/
+COPY submodules/SenseVoiceSmall-RKNN2/*.mvn /opt/sensevoice/
+COPY submodules/SenseVoiceSmall-RKNN2/*.yaml /opt/sensevoice/
+COPY submodules/SenseVoiceSmall-RKNN2/*.wav /opt/sensevoice/
+
+# Copy requirements.txt from main repo
 COPY requirements.txt /opt/sensevoice/
-COPY *.py /opt/sensevoice/
-COPY *.onnx /opt/sensevoice/
-COPY *.model /opt/sensevoice/
-COPY *.npy /opt/sensevoice/
-COPY *.mvn /opt/sensevoice/
-COPY *.yaml /opt/sensevoice/
-COPY *.wav /opt/sensevoice/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
