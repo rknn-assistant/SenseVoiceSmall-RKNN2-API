@@ -1,6 +1,7 @@
 # SenseVoiceSmall-RKNN2 Docker API
 
 Docker containerization of the SenseVoiceSmall-RKNN2 model for speech-to-text processing with RKNN2 acceleration.
+# WARNING: This ia a work in progress, it likey is not working
 
 ## Overview
 
